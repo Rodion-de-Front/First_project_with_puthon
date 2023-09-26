@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: traiding
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    build:
+      context: .
+      dockerfile: Dockerfile.pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: email@bk.ru
+      PGADMIN_DEFAULT_PASSWORD: mypgadminpassword
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin_data:
