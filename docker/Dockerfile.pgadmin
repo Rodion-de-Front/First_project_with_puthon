@@ -1,6 +1,6 @@
 # Используем официальный образ pgAdmin
 FROM dpage/pgadmin4
 
-# Добавляем файлы конфигурации (если необходимо)
-COPY config.py /pgadmin4/
-COPY servers.json /pgadmin4/servers.json
+# # Добавляем файлы конфигурации (если необходимо)
+# COPY config.py /pgadmin4/
+# COPY servers.json /pgadmin4/servers.json
