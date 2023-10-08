@@ -5,10 +5,12 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.postgres
+    env_file:
+      - app/.env
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -18,9 +20,11 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.pgadmin
+    env_file:
+      - app/.env
     environment:
-      PGADMIN_DEFAULT_EMAIL: email@bk.ru
-      PGADMIN_DEFAULT_PASSWORD: mypgadminpassword
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "8080:80"
     depends_on:
