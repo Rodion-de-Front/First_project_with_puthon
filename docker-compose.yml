@@ -37,6 +37,14 @@ services:
     volumes:
       - ./app:/code/app
 
+  redis:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.redis
+    ports:
+      - "6379:6379"
+
+
 volumes:
   postgres_data:
   pgadmin_data:

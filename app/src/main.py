@@ -1,4 +1,8 @@
 from fastapi import Depends, FastAPI
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi.middleware.cors import CORSMiddleware
+from redis import asyncio as aioredis
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Optional
@@ -9,6 +13,21 @@ from app.src.operations.router import router as router_operation
 
 app = FastAPI(
     title="Trading App"
+)
+
+# указываем с каких адресов могут приходить запросы
+origins = [
+    "http://localhost:3000",
+]
+
+# что мы разрешаем делать
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
+                   "Authorization"],
 )
 
 app.include_router(
@@ -110,3 +129,12 @@ def add_trades(trades: List[Trade]):
     fake_Trades.extend(trades)
     #возвращаем ответ и обновлённый список сделок
     return {"status": 200, "data": fake_Trades}
+
+
+
+# фунция которая срабатывает при  старте проекта
+@app.on_event("startup")
+async def startup_event():
+    # подключение к redis
+    redis = aioredis.from_url("redis://localhost", encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")

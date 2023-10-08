@@ -1,6 +1,8 @@
+import time
 from typing import List
 from datetime import datetime
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi_cache.decorator import cache
 from pydantic import BaseModel
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +15,16 @@ router = APIRouter(
     prefix="/operations",
     tags=["Operation"]
 )
+
+
+# эндпоинт c хешированием у которого много запросов (данные хранятся 30 секунд)
+@router.get("/long_operation")
+@cache(expire=30)
+def get_long_op():
+    time.sleep(2)
+    return "Много много данных, которые вычислялись сто лет"
+
+
 
 class OperationSchema(BaseModel):
     id: int
@@ -28,9 +40,21 @@ class OperationSchema(BaseModel):
 
 @router.get("/", response_model=List[OperationSchema])
 async def get_specific_operations(operation_type: str, session: AsyncSession = Depends(get_async_session)):
-    query = select(operation).where(operation.c.type == operation_type)
-    result = await session.execute(query)
-    return result.all()
+    try:
+        query = select(operation).where(operation.c.type == operation_type)
+        result = await session.execute(query)
+        return {
+            "status": "success",
+            "data": result.all(),
+            "details": None
+        }
+    # обработка ошибок
+    except Exception:
+        raise HTTPException(sratus_code=500, detail={
+            "status": "error",
+            "data": None,
+            "details": None
+        })
 
 
 @router.post("/")
