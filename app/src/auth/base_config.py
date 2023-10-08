@@ -4,7 +4,7 @@ from fastapi_users.authentication import JWTStrategy
 
 from app.src.auth.manager import get_user_manager
 from app.src.auth.models import User
-from app.src.config import SECRET
+from app.config import SECRET
 
 cookie_transport = CookieTransport(cookie_name="bonds", cookie_max_age=3600)
 
