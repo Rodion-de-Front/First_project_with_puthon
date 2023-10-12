@@ -48,6 +48,18 @@ services:
     ports:
       - "6379:6379"
 
+  bot:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.bot
+    env_file:
+      - app/.env
+    environment:
+      BOT_TOKEN: ${API_BOT_TOKEN}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/code/app
 
 volumes:
   postgres_data:

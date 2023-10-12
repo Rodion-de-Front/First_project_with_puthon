@@ -1,38 +1,24 @@
-import telebot
-from telebot import types
+from aiogram import Bot, Dispatcher, executor, types
 
-# токен бота
-API_TOKEN = '6673848683:AAHBkgTNi27SKTtcqjxN1NeEim2TfZTlXd4'
+from app.config import API_BOT_TOKEN
 
-# cоздаем экземпляр бота
-bot = telebot.TeleBot(API_TOKEN)
+bot = Bot(API_BOT_TOKEN)
+dp = Dispatcher(bot)
 
-# словарь с шагами пользователей
-bot_states = {}
+@dp.message_handler(commands=['start'])
+async def start_message(message: types.Message):
+    await message.answer("Hello")
 
-# Обработчик для команды /start
-@bot.message_handler(commands=['start'])
-def handle_start(message):
-    bot.send_message(message.chat.id, "Привет! Я бот-эхо. Отправь мне любое сообщение, и я повторю его.")
-    bot_states[message.chat.id] = 2
+@dp.message_handler()
+async def info(message: types.Message):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("site", url='https://arzongo.uz'))
+    markup.add(types.InlineKeyboardButton('Hello', callback_data='hello'))
+    await message.answer("Hello", reply_markup=markup)
 
-# Обработчик для всех остальных сообщений
-@bot.message_handler()
-def bot_brains(message):
+@dp.callback_query_handler()
+async def callback(call):
+    await call.message.answer("hello")
 
-    if bot_states[message.chat.id] == 2:
-        markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton("Go to site", url='https://google.com'))
-        btn2 = types.InlineKeyboardButton('Удалить d', callback_data='delete')
-        btn3 = types.InlineKeyboardButton ('Измениь J', callback_data='edit')
-        markup.row(btn2, btn3)
-        bot.send_message(message.chat.id, "Gthtqnb", reply_markup=markup)
 
-# Обработчик для инлайн кнопок
-@bot.callback_query_handler(func=lambda callback: True)
-def click_on_button(callback):
-    if callback.data == "delete":
-        bot.send_message(callback.message.chat.id, "Suck")
-
-# Запуск непрерывной работы бота
-bot.polling(none_stop=True)
+executor.start_polling(dp)
