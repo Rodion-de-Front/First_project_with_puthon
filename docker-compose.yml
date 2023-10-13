@@ -61,6 +61,13 @@ services:
     volumes:
       - ./app:/code/app
 
+  site:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.nginx
+    ports:
+      - "80:80"
+
 volumes:
   postgres_data:
   pgadmin_data:
