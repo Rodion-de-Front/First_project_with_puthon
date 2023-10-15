@@ -1,0 +1,14 @@
+# Используйте базовый образ Node.js
+FROM node:14
+
+WORKDIR /app
+
+COPY app/site/package*.json ./
+
+RUN npm install
+
+COPY app/site/ .
+
+RUN npm run build
+
+CMD ["npm", "start"]
